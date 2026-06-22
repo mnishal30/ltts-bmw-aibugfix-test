@@ -1,0 +1,37 @@
+# Azure Pipelines — AI BugFix CI for ltts-bmw-aibugfix-test
+# Triggered on-demand by the AI BugFix pipeline (Phase C) via the Pipelines REST API,
+# and on pushes to main. Runs unit tests with pytest.
+trigger:
+  branches:
+    include:
+      - main
+      - 'aibugfix/*'   # fix branches created by the Bug Fixer agent
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  PYTHON_VERSION: '3.13'
+
+steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '$(PYTHON_VERSION)'
+    displayName: 'Use Python $(PYTHON_VERSION)'
+
+  - script: |
+      python -m pip install --upgrade pip
+      if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      pip install pytest
+    displayName: 'Install dependencies'
+
+  - script: |
+      python -m pytest -q --junitxml=junit/test-results.xml
+    displayName: 'Run unit tests (pytest)'
+
+  - task: PublishTestResults@2
+    condition: succeededOrFailed()
+    inputs:
+      testResultsFiles: 'junit/test-results.xml'
+      testRunTitle: 'AI BugFix pytest'
+    displayName: 'Publish test results'
