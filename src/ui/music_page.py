@@ -2,8 +2,7 @@ from src.models.track import Track
 
 
 def show_track_details(selected_track: Track | None) -> dict[str, str]:
-    # APP-101 BUG: selected_track can be None but is dereferenced directly.
     return {
-        "title": selected_track.title,
-        "artist": selected_track.artist,
+        "title": selected_track.title if selected_track is not None else "",
+        "artist": selected_track.artist if selected_track is not None else "",
     }
