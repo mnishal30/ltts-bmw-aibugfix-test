@@ -1,8 +1,7 @@
 from src.services.player_service import get_selected_track
 from src.ui.music_page import show_track_details
 
-
-def process_users(user_ids: list[str]) -> list[dict[str, str]]:
+def process_users(user_ids: list[object]) -> list[dict[str, str]]:
     output: list[dict[str, str]] = []
     for user_id in user_ids:
         if not isinstance(user_id, str):
